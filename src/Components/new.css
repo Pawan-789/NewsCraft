@@ -54,6 +54,7 @@
     color:#bbb;
     transform: translateY(-50%);
     font-size: 1.8rem;
+    cursor: pointer;
 
     
 }

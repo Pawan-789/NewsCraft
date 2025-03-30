@@ -1,0 +1,41 @@
+.bookmark-heading{
+    font-family: "Bebas Neue",sans-serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: #ddd;
+    letter-spacing: 0.1rem;
+    margin-bottom:2rem;
+
+}
+.bookmark-list{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+.bookmark-item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 2rem;
+    cursor: pointer;
+}
+
+.bookmark-item img{
+    height: 7rem;
+    width: 7rem;
+    object-fit: cover;
+    border-radius:0.8rem;
+    margin-top: 1rem;
+}
+.img-item h3{
+    font-family: 'Comfortaa',sans-serif;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color:#fff;
+}
+
+.delete-btn{
+    font-size: 2.4rem;
+    color:#b88efc;
+    cursor: pointer;
+}
