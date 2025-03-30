@@ -1,37 +1,91 @@
 import React, { useEffect, useState } from 'react'
 import Weather from "./Weather"
 import Calendar from "./Calendar" 
-import "./new.css"
+import "./News.css"
 import axios from 'axios'
+import NewsOverlay from './NewsOverlay'
+import Bookmarks from './Bookmarks'
+import "./Overlay.css"
 
 
+
+const categories =["general","world","business","technology","health","sports","science","entertainment","nation"]
 
 
 const News = () => {
   const [headline,setHeadline]=useState(null);
   const [news,setNews]=useState([]);
+  const [selectedCategory,setSelectedCategory]=useState("general")
+  const [searchInput,setSearchInput] = useState("")
+  const [searchQuery,setSearchQuery] = useState("")
+  const [showOverlay,setShowOverlay] = useState(false)
+  const [selectedArticle,setSelectedArticle] = useState("")
+  const [bookmarks,setBookmarks] = useState([])
+  const [showBookmarkOverlay,setShowBookmarkOverlay] = useState(false)
 
   useEffect(()=>{
-    const fetchNews=async() => {
-      const url="https://gnews.io/api/v4/top-headlines?category=general&lang=en&apikey=9e9504f434d8714995bd02b8d3d0c25d"
+    const fetchNews= async () => {
+      let url =`hello ,make your own url here`
       
+      if(searchQuery){
+        url =`make ur own url here`
+      }
+
       const response=await axios.get(url) 
 
       const fetchedNews= response.data.articles
+      
+
+      setHeadline(fetchedNews[0])
+      setNews(fetchedNews.slice(1, 7))
+
+      const savedBookmarks =JSON.parse(localStorage.getItem('bookmarks' )) || []
+
+      setBookmarks(savedBookmarks)
   
-      console.log(fetchedNews[0])
+      console.log(news)
     }
     fetchNews()
-  },[])
+  },[selectedCategory,searchQuery])
+
+  const handleCategoryClick = (e,category) =>{
+    e.preventDefault();
+    setSelectedCategory(category)
+
+  }
+
+  const handleSearch = (e)=>{
+    e.preventDefault();
+    setSearchQuery(searchInput)
+    setSearchInput('')
+  }
   
-  
+  const handleArticleClick=(article)=>{
+    setSelectedArticle(article)
+    setShowOverlay(true)
+
+    console.log(article);
+  }
+
+  const handleBookmarksClick=(article)=>{
+    setBookmarks((prevBookmarks)=>{
+      const updatedBookmarks = prevBookmarks.find((bookmark)=>
+      bookmark.title === article.title)
+        ? prevBookmarks.filter((bookmark)=>bookmark.title !==article.title)
+        : [...prevBookmarks,article]
+      
+      localStorage.setItem('bookmarks',JSON.stringify(updatedBookmarks))
+      return updatedBookmarks
+    })
+  }
+
   return (
     <div className="news">
         <header className="news-header">
-          <h1 className="logo">News & Blogs</h1>
+          <h1 className="logo">NewsCraft: News & Blogs</h1>
           <div className="search-bar">
-          <form >
-            <input type="text" placeholder="Search news..." />
+          <form onSubmit={handleSearch }>
+            <input type="text" placeholder="Search news..." value={searchInput} onChange={(e)=>setSearchInput(e.target.value)} />
             <button type="submit">
               <i className="fa-solid fa-magnifying-glass"></i>
 
@@ -48,71 +102,62 @@ const News = () => {
                 <nav className="categories">
                   <h1 className="nav-heading">Categories</h1>
                   <div className="nav-links">
-                    <a href="#" className='nav-link'>General</a>
-                    <a href="#" className='nav-link'>World</a>
-                    <a href="#" className='nav-link'>Business</a>
-                    <a href="#" className='nav-link'>Technology</a>
-                    <a href="#" className='nav-link'>Health</a>
-                    <a href="#" className='nav-link'>Sports</a>
-                    <a href="#" className='nav-link'>Science</a>
-                    <a href="#" className='nav-link'>Entertainment</a>
-                    <a href="#" className='nav-link'>Nation</a>
-                    <a href="#" className='nav-link'>Bookmarks <i className="fa-regular fa-bookmark"></i>  </a>
+                    {categories.map((category)=>( <a href="#" key={category} className='nav-link' onClick={(e)=> handleCategoryClick(e,category)}>{category}</a>))}
+
+                    <a href="#" className='nav-link' onClick={()=>setShowBookmarkOverlay(true)}>Bookmarks <i className="fa-solid fa-bookmark"></i>  </a>
                   </div>
                 </nav>
             </div>
             <div className="news-section">
-                <div className="headline">
-                  <img src="./images/news.jpeg" alt="Headline-img" />
-                  <h2 className="headline-title">Its a clash of two Nations:Ukrain & Russia 
-                  <i className="fa-regular fa-bookmark bookmark"></i>
+              {headline && (
+                <div className="headline" onClick={()=>handleArticleClick(headline)}>
+                  <img src={headline.image} alt={headline.title} />
+                  <h2 className="headline-title">
+                    {headline.title}
+                  <i 
+                    className={`${
+                      bookmarks.some((bookmark)=>
+                      bookmark.title === headline.title)
+                        ? 'fa-solid'
+                        : 'fa-regular'    
+                      } fa-bookmark bookmark`} onClick={(e)=>
+                        {
+                          e.stopPropagation()
+                          handleBookmarksClick(headline)
+                        }
+                      
+                      } ></i>
                   </h2>
                 </div>
+              )}
                 <div className="news-grid">
-                  <div className="news-grid-item">
-                    <img src="./images/tech.jpeg" alt="News Img" />
-                    <h3>
-                      Anything but this is fake!. 
-                      <i className="fa-regular fa-bookmark bookmark"></i>
-                    </h3>
-                  </div>
-                  <div className="news-grid-item">
-                    <img src="./images/sports.jpeg" alt="News Img" />
-                    <h3>
-                      Anything but this is fake!. 
-                      <i className="fa-regular fa-bookmark bookmark"></i>
-                    </h3>
-                  </div>
-                  <div className="news-grid-item">
-                    <img src="./images/sports.jpeg" alt="News Img" />
-                    <h3>
-                      Anything but this is fake!. 
-                      <i className="fa-regular fa-bookmark bookmark"></i>
-                    </h3>
-                  </div>
-                  <div className="news-grid-item">
-                    <img src="./images/entertainment.jpeg" alt="News Img" />
-                    <h3>
-                      Anything but this is fake!. 
-                      <i className="fa-regular fa-bookmark bookmark"></i>
-                    </h3>
-                  </div>
-                  <div className="news-grid-item">
-                    <img src="./images/world.jpeg" alt="News Img" />
-                    <h3>
-                      Anything but this is fake!. 
-                      <i className="fa-regular fa-bookmark bookmark"></i>
-                    </h3>
-                  </div>
-                  <div className="news-grid-item">
-                    <img src="./images/health.jpeg" alt="News Img" />
-                    <h3>
-                      Anything but this is fake!. 
-                      <i className="fa-regular fa-bookmark bookmark"></i>
-                    </h3>
-                  </div>
+                  {news.map((article, index)=>(
+                    <div key={index} className="news-grid-item" onClick={()=>handleArticleClick(article)}>
+                      <img src={article.image} alt={article.title} />
+                      <h3>
+                        {article.title}
+                        <i 
+                    className={`${
+                      bookmarks.some((bookmark)=>
+                      bookmark.title === article.title)
+                        ? 'fa-solid'
+                        : 'fa-regular'    
+                      } fa-bookmark bookmark`} onClick={(e)=>
+                        {
+                          e.stopPropagation()
+                          handleBookmarksClick(article)
+                        }
+                      
+                      } ></i>
+                      </h3>
+                    </div>
+                  ))}
+                  
                 </div>
             </div>
+            <NewsOverlay show={showOverlay} article={selectedArticle} onClose={()=> setShowOverlay(false)}/>
+            <Bookmarks show={showBookmarkOverlay} bookmarks={bookmarks} onClose={()=>setShowBookmarkOverlay(false)}
+            onSelectArticle={handleArticleClick} onDeleteBookmark={handleBookmarksClick}/>
             <div className="my-blogs">My Blogs
             </div>
             <div className="weather-calendar">
