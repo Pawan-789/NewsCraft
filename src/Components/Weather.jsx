@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react'
 import "./Weather.css"
 import axios from 'axios'
 const Weather = () => {
-
+  const apiKey1 =import.meta.env.VITE_API_KEY1
   const [data,setData] = useState({})
   const [location,setLocation] =useState('')
 
   useEffect(()=>{
     const fetchDefaultLocation = async()=>{
       const defaultLocation ='New Delhi'
-      const url=`https://api.openweathermap.org/data/2.5/weather?q=${defaultLocation}&units=Metric&appid=79fc1ce110bd68717aaae36bc707ffc5`
+      
+      const url=`https://api.openweathermap.org/data/2.5/weather?q=${defaultLocation}&units=Metric&appid=${apiKey1}`
       
       const response= await axios.get(url)
       setData(response.data)
@@ -19,7 +20,7 @@ const Weather = () => {
   },[])
 
   const search =async()=>{
-    const url=`https://api.openweathermap.org/data/2.5/weather?q=${location}&units=Metric&appid=79fc1ce110bd68717aaae36bc707ffc5`
+    const url=`https://api.openweathermap.org/data/2.5/weather?q=${location}&units=Metric&appid=${apiKey1}`
 
    //for ensuring response in both successful or unsuccessful output 
     try{
