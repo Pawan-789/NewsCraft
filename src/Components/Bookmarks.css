@@ -1,41 +1,61 @@
-.bookmark-heading{
-    font-family: "Bebas Neue",sans-serif;
+
+.bookmark-heading {
+    font-family: "Bebas Neue", sans-serif;
     font-size: 3rem;
     font-weight: 300;
     color: #ddd;
     letter-spacing: 0.1rem;
-    margin-bottom:2rem;
-
+    margin-bottom: 2rem;
 }
-.bookmark-list{
+
+.bookmark-list {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    max-height: 70vh;
+    overflow-y: scroll;
+    padding-right: 0.5rem;
 }
-.bookmark-item{
+.bookmark-list::-webkit-scrollbar{
+    display: none;
+}
+.bookmark-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    column-gap: 2rem;
+    gap: 2rem;
     cursor: pointer;
+    padding: 1rem;
+    border-radius: 0.8rem;
 }
 
-.bookmark-item img{
+.bookmark-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.bookmark-item img {
     height: 7rem;
     width: 7rem;
     object-fit: cover;
-    border-radius:0.8rem;
-    margin-top: 1rem;
-}
-.img-item h3{
-    font-family: 'Comfortaa',sans-serif;
-    font-weight: bold;
-    font-size: 1.5rem;
-    color:#fff;
+    border-radius: 0.8rem;
 }
 
-.delete-btn{
+.bookmark-item h3 {
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 200;
+    font-size: 1.6rem;
+    color: #fff;
+    flex: 1;
+    margin: 0 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.delete-btn {
     font-size: 2.4rem;
-    color:#b88efc;
+    color: #b88efc;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }

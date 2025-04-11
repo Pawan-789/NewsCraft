@@ -5,14 +5,16 @@ import "./News.css"
 import axios from 'axios'
 import NewsOverlay from './NewsOverlay'
 import Bookmarks from './Bookmarks'
+import BlogsOverlay from './BlogsOverlay'
 import "./Overlay.css"
+import './BlogsOverlay.css'
 
 
 
 const categories =["general","world","business","technology","health","sports","science","entertainment","nation"]
 
 
-const News = () => {
+const News = ({onShowBlogs,blogs,onEditBlog,onDeleteBlog}) => {
   const [headline,setHeadline]=useState(null);
   const [news,setNews]=useState([]);
   const [selectedCategory,setSelectedCategory]=useState("general")
@@ -22,13 +24,15 @@ const News = () => {
   const [selectedArticle,setSelectedArticle] = useState("")
   const [bookmarks,setBookmarks] = useState([])
   const [showBookmarkOverlay,setShowBookmarkOverlay] = useState(false)
-
+  const [selectedPost,setSelectedPost] =useState(null)
+  const [showBlogOverlay,setShowBlogOverlay] =useState(false)
   useEffect(()=>{
     const fetchNews= async () => {
-      let url =`hello ,make your own url here`
+      const apiKey =import.meta.env.VITE_API_KEY
+      let url =`https://gnews.io/api/v4/top-headlines?category=${selectedCategory}&lang=en&apikey=${apiKey}`
       
       if(searchQuery){
-        url =`make ur own url here`
+        url =`https://gnews.io/api/v4/search?q={searchQuery&lang=en&apikey=${apiKey}`
       }
 
       const response=await axios.get(url) 
@@ -79,10 +83,19 @@ const News = () => {
     })
   }
 
+  const handleBlogClick =(blog)=>{
+    setSelectedPost(blog)
+    setShowBlogOverlay(true)
+  }
+  const closeBlogOverlay =()=>{
+    setShowBlogOverlay(false)
+    setSelectedPost(null)
+  }
+
   return (
     <div className="news">
         <header className="news-header">
-          <h1 className="logo">NewsCraft: News & Blogs</h1>
+          <h1 className="logo">NewsCraft</h1>
           <div className="search-bar">
           <form onSubmit={handleSearch }>
             <input type="text" placeholder="Search news..." value={searchInput} onChange={(e)=>setSearchInput(e.target.value)} />
@@ -95,7 +108,7 @@ const News = () => {
         </header>
         <div className="news-content">
             <div className="navbar">
-                <div className="user">
+                <div className="user" onClick={onShowBlogs}>
                   <img src="./images/3.jpg" alt="user image" />
                   <p>Ruan's Blog</p>
                 </div>
@@ -158,17 +171,50 @@ const News = () => {
             <NewsOverlay show={showOverlay} article={selectedArticle} onClose={()=> setShowOverlay(false)}/>
             <Bookmarks show={showBookmarkOverlay} bookmarks={bookmarks} onClose={()=>setShowBookmarkOverlay(false)}
             onSelectArticle={handleArticleClick} onDeleteBookmark={handleBookmarksClick}/>
-            <div className="my-blogs">My Blogs
+            <div className="my-blogs">
+              <h1 className="my-blogs-heading">My-Blogs</h1>
+              <div className="blog-posts">
+                {blogs.map((blog,index)=>(
+                  <div key={index} className="blog-post" onClick={()=> handleBlogClick(blog)}>
+                     <img src={blog.image} alt={blog.title} />
+                     <h3>{blog.title}</h3>
+                     <p>{blog.content}</p>
+                     <div className="post-buttons">
+                      <button className="edit-btn" onClick={()=>onEditBlog(blog)}>
+                        <i className="bx bxs-edit"></i>
+                      </button>
+                      <button className="delete-post" onClick={(e)=>{
+                        e.stopPropagation()
+                        onDeleteBlog(blog)}
+                        } >
+                        <i className="bx bxs-x-circle"></i>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                
+              </div>
+              {selectedPost && showBlogOverlay && (
+                <BlogsOverlay show={showBlogOverlay} blog={selectedPost} onClose={closeBlogOverlay}/>
+              )}
+              
             </div>
             <div className="weather-calendar">
             <Weather/>
             <Calendar/>
             
-             </div>
+             </div> 
           
 
         </div>
-        <footer className="news-footer">Footer</footer>
+        <footer className="news-footer">
+          <p>
+            <span>NewsCraft:News & Blogs</span>
+          </p>
+          <p>
+            &copy;All Rights Reserved. By Pawan
+          </p>
+        </footer>
     </div>
   )
 }
