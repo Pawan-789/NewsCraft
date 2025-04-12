@@ -37,7 +37,7 @@ A modern news and blogging platform built with React that combines news aggregat
 
 1. Clone the repository
 ```bash
-git clone https://github.com/Psawan-789/newzy.git
+git clone https://github.com/Pawan-789/NewsCraft.git
 ```
 
 2. Install dependencies
