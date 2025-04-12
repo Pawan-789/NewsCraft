@@ -24,5 +24,4 @@ details.jsx
 *.njsproj
 *.sln
 *.sw?
-
 .env
