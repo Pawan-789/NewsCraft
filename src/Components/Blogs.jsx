@@ -9,7 +9,15 @@ const Blogs = ({onBack,onCreateBlog,editPost,isEditing}) => {
     const [submitted,setSubmitted] =useState(false)
     const [titleValid,setTitleValid] = useState(true)
     const [contentValid,setContentValid] = useState(true)
+    const [userImage, setUserImage] = useState('./images/ghibli.jpg');
 
+     // Adding this useEffect to load user data when component mounts
+     useEffect(() => {
+        const savedUserData = JSON.parse(localStorage.getItem('userData'));
+        if (savedUserData && savedUserData.image) {
+            setUserImage(savedUserData.image);
+        }
+    }, []);
     useEffect(()=>{
         if(isEditing && editPost){
             setImage(editPost.image)
@@ -77,7 +85,7 @@ const Blogs = ({onBack,onCreateBlog,editPost,isEditing}) => {
   return (
     <div className="blogs">
         <div className="blogs-left">
-            <img src="./images/ghibli.jpg" alt="User Img" />
+            <img src={userImage} alt="User Img" />
         </div>
         <div className="blogs-right">
             {!showForm && !submitted && (<button className="post-btn" onClick={()=>setShowForm(true)}>Create New Post</button>)}

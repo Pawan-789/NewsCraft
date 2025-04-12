@@ -1,8 +1,8 @@
-# 📰 Newzy
+# 📰 NewsCraft
 
 A modern news and blogging platform built with React that combines news aggregation, personal blogging, weather updates, and calendar management in one seamless application.
 
-![Newzy Banner](https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1200&h=400)
+![NewsCraft Banner](https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1200&h=400)
 
 ## ✨ Features
 
@@ -84,13 +84,10 @@ VITE_NEWS_API_KEY=your_news_api_key
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👥 Authors
 
-- Your Name - *Initial work* - [YourGitHub](https://github.com/yourusername)
+- Your Name - *Initial work* - [YourGitHub](https://github.com/Pawan-789)
 
 ## 🙏 Acknowledgments
 

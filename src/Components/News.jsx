@@ -26,6 +26,45 @@ const News = ({onShowBlogs,blogs,onEditBlog,onDeleteBlog}) => {
   const [showBookmarkOverlay,setShowBookmarkOverlay] = useState(false)
   const [selectedPost,setSelectedPost] =useState(null)
   const [showBlogOverlay,setShowBlogOverlay] =useState(false)
+  const [username, setUsername] = useState('');
+  const [userImage, setUserImage] = useState('./images/ghibli.jpg'); // default image
+  const [showUserSetup, setShowUserSetup] = useState(false);
+  const [imagePreview, setImagePreview] = useState('');
+
+
+  useEffect(() => {
+    const savedUserData = JSON.parse(localStorage.getItem('userData'));
+    if (!savedUserData) {
+      setShowUserSetup(true);
+    } else {
+      setUsername(savedUserData.username);
+      setUserImage(savedUserData.image || './images/default-user.jpg');
+    }
+  }, []);
+  
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleUserSetupSubmit = (e) => {
+    e.preventDefault();
+    if (username.trim()) {
+      const userData = {
+        username,
+        image: imagePreview || './images/ghibli.jpg'
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+      setUserImage(userData.image);
+      setShowUserSetup(false);
+    }
+  };
+  
   useEffect(()=>{
     const fetchNews= async () => {
       const apiKey =import.meta.env.VITE_API_KEY
@@ -94,127 +133,164 @@ const News = ({onShowBlogs,blogs,onEditBlog,onDeleteBlog}) => {
 
   return (
     <div className="news">
-        <header className="news-header">
-          <h1 className="logo">NewsCraft</h1>
-          <div className="search-bar">
-          <form onSubmit={handleSearch }>
-            <input type="text" placeholder="Search news..." value={searchInput} onChange={(e)=>setSearchInput(e.target.value)} />
-            <button type="submit">
-              <i className="fa-solid fa-magnifying-glass"></i>
-
-            </button>
-          </form>
-          </div>
-        </header>
-        <div className="news-content">
-            <div className="navbar">
-                <div className="user" onClick={onShowBlogs}>
-                  <img src="./images/3.jpg" alt="user image" />
-                  <p>Ruan's Blog</p>
-                </div>
-                <nav className="categories">
-                  <h1 className="nav-heading">Categories</h1>
-                  <div className="nav-links">
-                    {categories.map((category)=>( <a href="#" key={category} className='nav-link' onClick={(e)=> handleCategoryClick(e,category)}>{category}</a>))}
-
-                    <a href="#" className='nav-link' onClick={()=>setShowBookmarkOverlay(true)}>Bookmarks <i className="fa-solid fa-bookmark"></i>  </a>
+      {showUserSetup && (
+        <div className="user-setup-modal">
+          <div className="user-setup-content">
+            <h2>Welcome to NewsCraft</h2>
+            <p>Please set up your profile</p>
+            <form onSubmit={handleUserSetupSubmit}>
+              <div className="image-upload">
+                <label htmlFor="user-image">
+                  <div className="image-preview">
+                    {imagePreview ? (
+                      <img src={imagePreview} alt="Preview" />
+                    ) : (
+                      <div className="placeholder">Click to upload image</div>
+                    )}
                   </div>
-                </nav>
-            </div>
-            <div className="news-section">
-              {headline && (
-                <div className="headline" onClick={()=>handleArticleClick(headline)}>
-                  <img src={headline.image} alt={headline.title} />
-                  <h2 className="headline-title">
-                    {headline.title}
-                  <i 
-                    className={`${
-                      bookmarks.some((bookmark)=>
-                      bookmark.title === headline.title)
-                        ? 'fa-solid'
-                        : 'fa-regular'    
-                      } fa-bookmark bookmark`} onClick={(e)=>
-                        {
-                          e.stopPropagation()
-                          handleBookmarksClick(headline)
-                        }
-                      
-                      } ></i>
-                  </h2>
+                  <input
+                    id="user-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+              </div>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Your name"
+                required
+              />
+              <button type="submit">Save Profile</button>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      <header className="news-header">
+        <h1 className="logo">NewsCraft</h1>
+        <div className="search-bar">
+        <form onSubmit={handleSearch }>
+          <input type="text" placeholder="Search news..." value={searchInput} onChange={(e)=>setSearchInput(e.target.value)} />
+          <button type="submit">
+            <i className="fa-solid fa-magnifying-glass"></i>
+
+          </button>
+        </form>
+        </div>
+      </header>
+      <div className="news-content">
+          <div className="navbar">
+              <div className="user" onClick={onShowBlogs}>
+                <img src={userImage}alt="user image" />
+                <p>{username ? `${username}'s Blog` : "My Blog"}</p>
+              </div>
+              <nav className="categories">
+                <h1 className="nav-heading">Categories</h1>
+                <div className="nav-links">
+                  {categories.map((category)=>( <a href="#" key={category} className='nav-link' onClick={(e)=> handleCategoryClick(e,category)}>{category}</a>))}
+
+                  <a href="#" className='nav-link' onClick={()=>setShowBookmarkOverlay(true)}>Bookmarks <i className="fa-solid fa-bookmark"></i>  </a>
                 </div>
-              )}
-                <div className="news-grid">
-                  {news.map((article, index)=>(
-                    <div key={index} className="news-grid-item" onClick={()=>handleArticleClick(article)}>
-                      <img src={article.image} alt={article.title} />
-                      <h3>
-                        {article.title}
-                        <i 
-                    className={`${
-                      bookmarks.some((bookmark)=>
-                      bookmark.title === article.title)
-                        ? 'fa-solid'
-                        : 'fa-regular'    
-                      } fa-bookmark bookmark`} onClick={(e)=>
-                        {
-                          e.stopPropagation()
-                          handleBookmarksClick(article)
-                        }
-                      
-                      } ></i>
-                      </h3>
-                    </div>
-                  ))}
-                  
-                </div>
-            </div>
-            <NewsOverlay show={showOverlay} article={selectedArticle} onClose={()=> setShowOverlay(false)}/>
-            <Bookmarks show={showBookmarkOverlay} bookmarks={bookmarks} onClose={()=>setShowBookmarkOverlay(false)}
-            onSelectArticle={handleArticleClick} onDeleteBookmark={handleBookmarksClick}/>
-            <div className="my-blogs">
-              <h1 className="my-blogs-heading">My-Blogs</h1>
-              <div className="blog-posts">
-                {blogs.map((blog,index)=>(
-                  <div key={index} className="blog-post" onClick={()=> handleBlogClick(blog)}>
-                     <img src={blog.image} alt={blog.title} />
-                     <h3>{blog.title}</h3>
-                     <p>{blog.content}</p>
-                     <div className="post-buttons">
-                      <button className="edit-btn" onClick={()=>onEditBlog(blog)}>
-                        <i className="bx bxs-edit"></i>
-                      </button>
-                      <button className="delete-post" onClick={(e)=>{
+              </nav>
+          </div>
+          <div className="news-section">
+            {headline && (
+              <div className="headline" onClick={()=>handleArticleClick(headline)}>
+                <img src={headline.image} alt={headline.title} />
+                <h2 className="headline-title">
+                  {headline.title}
+                <i 
+                  className={`${
+                    bookmarks.some((bookmark)=>
+                    bookmark.title === headline.title)
+                      ? 'fa-solid'
+                      : 'fa-regular'    
+                    } fa-bookmark bookmark`} onClick={(e)=>
+                      {
                         e.stopPropagation()
-                        onDeleteBlog(blog)}
-                        } >
-                        <i className="bx bxs-x-circle"></i>
-                      </button>
-                    </div>
+                        handleBookmarksClick(headline)
+                      }
+                    
+                    } ></i>
+                </h2>
+              </div>
+            )}
+              <div className="news-grid">
+                {news.map((article, index)=>(
+                  <div key={index} className="news-grid-item" onClick={()=>handleArticleClick(article)}>
+                    <img src={article.image} alt={article.title} />
+                    <h3>
+                      {article.title}
+                      <i 
+                  className={`${
+                    bookmarks.some((bookmark)=>
+                    bookmark.title === article.title)
+                      ? 'fa-solid'
+                      : 'fa-regular'    
+                    } fa-bookmark bookmark`} onClick={(e)=>
+                      {
+                        e.stopPropagation()
+                        handleBookmarksClick(article)
+                      }
+                    
+                    } ></i>
+                    </h3>
                   </div>
                 ))}
                 
               </div>
-              {selectedPost && showBlogOverlay && (
-                <BlogsOverlay show={showBlogOverlay} blog={selectedPost} onClose={closeBlogOverlay}/>
-              )}
+          </div>
+          <NewsOverlay show={showOverlay} article={selectedArticle} onClose={()=> setShowOverlay(false)}/>
+          <Bookmarks show={showBookmarkOverlay} bookmarks={bookmarks} onClose={()=>setShowBookmarkOverlay(false)}
+          onSelectArticle={handleArticleClick} onDeleteBookmark={handleBookmarksClick}/>
+          <div className="my-blogs">
+            <h1 className="my-blogs-heading">My-Blogs</h1>
+            <div className="blog-posts">
+              {blogs.map((blog,index)=>(
+                <div key={index} className="blog-post" onClick={()=> handleBlogClick(blog)}>
+                    <img src={blog.image} alt={blog.title} />
+                    <h3>{blog.title}</h3>
+                    <p>{blog.content}</p>
+                    <div className="post-buttons">
+                    <button className="edit-btn" onClick={()=>onEditBlog(blog)}>
+                      <i className="bx bxs-edit"></i>
+                    </button>
+                    <button className="delete-post" onClick={(e)=>{
+                      e.stopPropagation()
+                      onDeleteBlog(blog)}
+                      } >
+                      <i className="bx bxs-x-circle"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
               
             </div>
-            <div className="weather-calendar">
-            <Weather/>
-            <Calendar/>
+            {selectedPost && showBlogOverlay && (
+              <BlogsOverlay show={showBlogOverlay} blog={selectedPost} onClose={closeBlogOverlay}/>
+            )}
             
-             </div> 
+          </div>
+          <div className="weather-calendar">
+          <Weather/>
+          <Calendar/>
           
+            </div> 
+        
 
-        </div>
-        <footer className="news-footer">
-          <p>
-            <span>NewsCraft:News & Blogs</span>
-          </p>
-          <p>
-            &copy;All Rights Reserved. By Pawan
-          </p>
-        </footer>
+      </div>
+      <footer className="news-footer">
+        <p>
+          <span>NewsCraft:News & Blogs</span>
+        </p>
+        <p>
+          &copy;All Rights Reserved. By Pawan
+        </p>
+      </footer>
     </div>
   )
 }

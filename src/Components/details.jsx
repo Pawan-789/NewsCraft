@@ -26,3 +26,22 @@
 //as bookmarked sections get vanishwed after refreshing.
 //so to solve this problem we stored it in local storage
 //included localStorage.setItems in handleBookamrksclick section and other new function called " savexdBookamrks"
+
+{/* {showUsernamePrompt && (
+        <div className="username-prompt">
+          <div className="username-prompt-content">
+            <h2>Welcome to NewsCraft</h2>
+            <p>Please enter your name:</p>
+            <form onSubmit={handleUsernameSubmit}>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Your name"
+                autoFocus
+              />
+              <button type="submit">Continue</button>
+            </form>
+          </div>
+        </div>
+      )} */}
